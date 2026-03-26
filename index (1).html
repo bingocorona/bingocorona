@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Corona Bingo</title>
+
+<!-- PWA META TAGS -->
+<meta name="application-name" content="Corona Bingo"/>
+<meta name="apple-mobile-web-app-title" content="Corona Bingo"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#4B0082"/>
+
+<!-- ICON LINKS (generated inline via JS below) -->
+<link id="apple-touch-icon" rel="apple-touch-icon" sizes="180x180"/>
+<link id="pwa-icon" rel="icon" type="image/png" sizes="192x192"/>
+<link id="manifest-link" rel="manifest"/>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:system-ui,sans-serif;background:#f0eaf8;min-height:100vh;font-size:14px}
+.topbar{background:#4B0082;padding:8px 12px;display:flex;align-items:center;gap:8px}
+.topbar-title{color:#FFD700;font-size:17px;font-weight:700;letter-spacing:1px;flex:1}
+.topbar-sub{color:#CEB9F5;font-size:10px;margin-top:1px}
+.top-btns{display:flex;gap:6px}
+.btn{cursor:pointer;border-radius:8px;font-size:12px;font-weight:700;padding:7px 11px;border:none;transition:all 0.15s;display:inline-flex;align-items:center;gap:4px}
+.btn:active{transform:scale(0.96)}
+.btn-purple{background:#FFD700;color:#4B0082}
+.btn-green{background:#00C853;color:#fff}
+.btn-danger{background:#FF1744;color:#fff}
+.btn-sm{padding:6px 10px;font-size:11px}
+.sessions-wrap{padding:7px 10px;background:#fff;border-bottom:1px solid #e0d6f5}
+.sessions-scroll{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.sessions-scroll::-webkit-scrollbar{height:2px}
+.sessions-scroll::-webkit-scrollbar-thumb{background:#C9AAFF;border-radius:2px}
+.session-chip{padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid #ccc;background:#fff;color:#666;white-space:nowrap;flex-shrink:0;transition:all 0.15s}
+.session-chip.active{background:#4B0082;color:#FFD700;border-color:#4B0082}
+.new-chip{padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px dashed #aaa;background:transparent;color:#888;white-space:nowrap;flex-shrink:0}
+.main{padding:8px 8px 60px}
+.sess-head{background:#fff;border-radius:10px;padding:9px 11px;margin-bottom:7px;border:1.5px solid #e0d6f5}
+.sess-name-input{width:100%;border:none;background:transparent;font-size:15px;font-weight:700;color:#4B0082;outline:none;margin-bottom:4px}
+.sess-name-input::placeholder{color:#bbb;font-weight:400}
+.sess-meta{font-size:11px;color:#888;margin-bottom:6px}
+.sess-badges{display:flex;gap:6px;margin-bottom:6px}
+.sbadge{flex:1;border-radius:7px;padding:5px 6px;text-align:center}
+.sbadge-g{background:#006400;color:#d4edda}
+.sbadge-r{background:#A32D2D;color:#FCEBEB}
+.sbadge-lbl{font-size:9px;font-weight:700;opacity:0.85;text-transform:uppercase}
+.sbadge-val{font-size:16px;font-weight:700}
+.sess-btns{display:flex;gap:6px}
+.totals{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:7px}
+.tot{border-radius:8px;padding:6px 4px;text-align:center}
+.tot-paid{background:#C8F7C5;border:1.5px solid #00C853}
+.tot-pend{background:#FFD6D6;border:1.5px solid #FF1744}
+.tot-res{background:#FFF9C4;border:1.5px solid #FFD600}
+.tot-free{background:#EEEDFE;border:1.5px solid #C9AAFF}
+.tot-lbl{font-size:10px;color:#444;font-weight:700;margin-bottom:2px}
+.tot-val{font-size:20px;font-weight:700}
+.t-g{color:#1B5E20}.t-r{color:#7a0000}.t-y{color:#5D4037}.t-p{color:#4B0082}
+.legend{display:flex;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.leg{display:flex;align-items:center;gap:4px;font-size:11px;color:#444;font-weight:700}
+.dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.d-g{background:#00C853}.d-r{background:#FF1744}.d-y{background:#FFD600}.d-e{background:#ddd;border:1px solid #ccc}
+.hint{font-size:10px;color:#aaa;margin-bottom:5px;text-align:right}
+.table-wrap{border-radius:10px;overflow:hidden;border:2px solid #4B0082;overflow-x:auto;width:35%;margin:0 auto}
+table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:240px}
+col.col-num{width:28px}
+col.col-data{width:calc((100% - 28px)/3)}
+thead th{padding:5px 2px;font-size:11px;font-weight:700;text-align:center;border:1px solid rgba(255,255,255,0.25)}
+.th-num{background:#4B0082;color:#FFD700}
+.th-name{background:#008B8B;color:#fff}
+.th-b{background:#4472C4;color:#fff}
+.th-i{background:#ED7D31;color:#fff}
+.td-num{text-align:center;font-size:11px;font-weight:700;border:1px solid #ddd;vertical-align:middle;padding:0}
+.num-inner{display:flex;align-items:center;justify-content:center;min-height:34px}
+.row-odd .td-num{background:#EEEDFE;color:#3C3489}
+.row-even .td-num{background:#FAEEDA;color:#B8860B}
+.td-data{border:1px solid #ddd;padding:0;vertical-align:top;cursor:pointer;transition:filter 0.12s}
+.td-data:active{filter:brightness(0.88)}
+.cell-inner{padding:3px 2px;min-height:34px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.cell-name{font-size:10px;font-weight:700;line-height:1.2;word-break:break-word}
+.cell-status{font-size:8px;font-weight:700;margin-top:2px;border-radius:3px;padding:1px 3px}
+.st-0{background:#F8F4FF}.st-0 .cell-name{color:#ccc;font-weight:400;font-size:10px}
+.st-1{background:#C8F7C5}.st-1 .cell-name{color:#1B5E20}.st-1 .cell-status{background:#00C853;color:#fff}
+.st-2{background:#FFD6D6}.st-2 .cell-name{color:#7a0000}.st-2 .cell-status{background:#FF1744;color:#fff}
+.st-3{background:#FFF0CC}.st-3 .cell-name{color:#5D4037}.st-3 .cell-status{background:#FFA000;color:#fff}
+.st-4{background:#DCEEFF}.st-4 .cell-name{color:#0C447C}.st-4 .cell-status{background:#378ADD;color:#fff}
+.st-5{background:#FFE8D6}.st-5 .cell-name{color:#712B13}.st-5 .cell-status{background:#D85A30;color:#fff}
+.st-6{background:#E8F5E9}.st-6 .cell-name{color:#1B5E20}.st-6 .cell-status{background:#00C853;color:#fff}
+.st-7{background:#F3E5F5}.st-7 .cell-name{color:#4A1B28}.st-7 .cell-status{background:#993556;color:#fff}
+.st-8{background:#FFFDE7}.st-8 .cell-name{color:#5D4037}.st-8 .cell-status{background:#FFD600;color:#5D4037}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;align-items:flex-end;justify-content:center}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:18px 18px 0 0;padding:16px 16px 28px;width:100%;max-width:500px;border-top:3px solid #4B0082}
+.modal-drag{width:36px;height:4px;background:#e0d6f5;border-radius:2px;margin:0 auto 14px}
+.modal-head{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.modal-badge{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.modal h3{font-size:15px;font-weight:700;color:#4B0082}
+.modal-sub{font-size:11px;color:#888;margin-bottom:12px}
+.modal input{width:100%;margin-bottom:12px;font-size:15px;padding:10px 12px;border:1.5px solid #C9AAFF;border-radius:9px;background:#F8F4FF;color:#222;outline:none;font-weight:700;text-transform:uppercase}
+.modal input:focus{border-color:#4B0082}
+.sbtn-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.sbtn{padding:12px;border-radius:9px;border:2px solid transparent;cursor:pointer;font-size:14px;font-weight:700;text-align:center;transition:all 0.15s}
+.sbtn:active{transform:scale(0.95)}
+.sb-g{background:#C8F7C5;color:#1B5E20}
+.sb-r{background:#FFD6D6;color:#7a0000}
+.sb-y{background:#FFF9C4;color:#5D4037}
+.sb-cl{background:#f0f0f0;color:#666}
+.sbtn.sel{border-color:currentColor}
+.mact{display:flex;gap:8px}
+.btn-save{flex:1;background:#4B0082;color:#FFD700;border:none;border-radius:9px;padding:12px;font-size:15px;font-weight:700;cursor:pointer}
+.btn-cancel{background:#f0f0f0;color:#666;border:none;border-radius:9px;padding:12px 14px;font-size:13px;cursor:pointer}
+.empty-state{text-align:center;padding:3rem 1rem;color:#aaa}
+/* PWA install banner */
+#install-banner{display:none;background:#FFD700;color:#4B0082;padding:10px 14px;font-size:13px;font-weight:700;align-items:center;gap:10px;border-bottom:2px solid #4B0082}
+#install-banner.show{display:flex}
+#install-banner button{background:#4B0082;color:#FFD700;border:none;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0}
+#install-banner .close-banner{background:transparent;color:#4B0082;font-size:18px;padding:0 4px;margin-left:auto}
+</style>
+</head>
+<body>
+
+<!-- PWA INSTALL BANNER -->
+<div id="install-banner">
+  <span>&#128081; Instala Corona Bingo en tu celular</span>
+  <button id="btn-install">Instalar</button>
+  <button class="close-banner" id="btn-close-banner">&#10005;</button>
+</div>
+
+<div class="topbar">
+  <div style="flex:1">
+    <div class="topbar-title">&#128081; CORONA BINGO</div>
+    <div class="topbar-sub">Transmision en vivo</div>
+  </div>
+  <div class="top-btns">
+    <button class="btn btn-green btn-sm" id="btn-dl-all">&#8659; Descargar todo</button>
+    <button class="btn btn-purple btn-sm" id="btn-new-top">+ Partida</button>
+  </div>
+</div>
+
+<div class="sessions-wrap">
+  <div class="sessions-scroll" id="sessions-bar"></div>
+</div>
+
+<div class="main" id="main-view"></div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-drag"></div>
+    <div class="modal-head">
+      <div class="modal-badge" id="modal-badge"></div>
+      <h3 id="modal-title">Carton #1</h3>
+    </div>
+    <div class="modal-sub" id="modal-sub"></div>
+    <input id="modal-name" type="text" placeholder="NOMBRE DEL PARTICIPANTE" maxlength="20"/>
+
+    <div style="font-size:11px;font-weight:700;color:#4B0082;margin-bottom:6px">ESTADO DE PAGO:</div>
+    <div class="sbtn-grid" style="margin-bottom:10px">
+      <div class="sbtn sb-g" data-s="1">&#10003; Pagado</div>
+      <div class="sbtn sb-r" data-s="2">&#10007; Pendiente</div>
+      <div class="sbtn sb-y" data-s="3">&#128221; Reservado</div>
+      <div class="sbtn sb-cl" data-s="0">Limpiar</div>
+    </div>
+
+    <div style="font-size:11px;font-weight:700;color:#4B0082;margin-bottom:6px">FIGURA GANADA:</div>
+    <div class="sbtn-grid" style="grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:6px">
+      <div class="sbtn" data-s="4" style="background:#DCEEFF;color:#0C447C;padding:8px 4px;font-size:12px">&#9698; L</div>
+      <div class="sbtn" data-s="5" style="background:#FFE8D6;color:#712B13;padding:8px 4px;font-size:12px">&#9868; T</div>
+      <div class="sbtn" data-s="6" style="background:#E8F5E9;color:#1B5E20;padding:8px 4px;font-size:12px">&#9135; LINEA</div>
+    </div>
+    <div class="sbtn-grid" style="grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px">
+      <div class="sbtn" data-s="7" style="background:#F3E5F5;color:#4A1B28;padding:8px 4px;font-size:12px">&#9670; DIAM.</div>
+      <div class="sbtn" data-s="8" style="background:#FFFDE7;color:#5D4037;padding:8px 4px;font-size:12px">&#128081; BINGO</div>
+      <div class="sbtn sb-cl" data-s="0" style="padding:8px 4px;font-size:12px">&#10005; Sin figura</div>
+    </div>
+
+    <div style="font-size:11px;font-weight:700;color:#4B0082;margin-bottom:6px">MONTO DEL PREMIO:</div>
+    <input id="modal-prize" type="number" placeholder="Ej: 30" min="0" style="margin-bottom:12px"/>
+
+    <div class="mact">
+      <button class="btn-cancel" id="modal-cancel">Cancelar</button>
+      <button class="btn-save" id="modal-save">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── GENERATE CROWN ICON ──────────────────────────────────────────────────────
+function makeCrownIcon(size){
+  const c=document.createElement('canvas');
+  c.width=c.height=size;
+  const ctx=c.getContext('2d');
+  const s=size;
+
+  // Background circle
+  ctx.fillStyle='#4B0082';
+  ctx.beginPath();
+  ctx.arc(s/2,s/2,s/2,0,Math.PI*2);
+  ctx.fill();
+
+  // Crown
+  const p=s*0.12;
+  ctx.fillStyle='#FFD700';
+  ctx.beginPath();
+  // Bottom bar
+  ctx.rect(p, s*0.62, s-p*2, s*0.14);
+  ctx.fill();
+  // Crown body
+  ctx.beginPath();
+  ctx.moveTo(p,        s*0.62);  // bottom-left
+  ctx.lineTo(p,        s*0.30);  // top-left
+  ctx.lineTo(s*0.30,   s*0.48);  // left dip
+  ctx.lineTo(s/2,      s*0.18);  // center top
+  ctx.lineTo(s*0.70,   s*0.48);  // right dip
+  ctx.lineTo(s-p,      s*0.30);  // top-right
+  ctx.lineTo(s-p,      s*0.62);  // bottom-right
+  ctx.closePath();
+  ctx.fill();
+
+  // Jewels
+  const jewels=[
+    {x:p+s*0.04,   y:s*0.27, r:s*0.055, color:'#FF1744'},
+    {x:s/2,        y:s*0.14, r:s*0.065, color:'#00C853'},
+    {x:s-p-s*0.04, y:s*0.27, r:s*0.055, color:'#2196F3'},
+  ];
+  jewels.forEach(j=>{
+    ctx.fillStyle=j.color;
+    ctx.beginPath();
+    ctx.arc(j.x,j.y,j.r,0,Math.PI*2);
+    ctx.fill();
+    // shine
+    ctx.fillStyle='rgba(255,255,255,0.45)';
+    ctx.beginPath();
+    ctx.arc(j.x-j.r*0.25,j.y-j.r*0.25,j.r*0.4,0,Math.PI*2);
+    ctx.fill();
+  });
+
+  return c.toDataURL('image/png');
+}
+
+// Generate icons at different sizes
+const icon192 = makeCrownIcon(192);
+const icon512 = makeCrownIcon(512);
+const icon180 = makeCrownIcon(180);
+
+// Set apple touch icon
+document.getElementById('apple-touch-icon').href = icon180;
+document.getElementById('pwa-icon').href = icon192;
+
+// ── MANIFEST (injected inline) ───────────────────────────────────────────────
+const manifest = {
+  name: 'Corona Bingo',
+  short_name: 'Corona Bingo',
+  description: 'Registro de partidas de bingo en vivo',
+  start_url: '.',
+  display: 'standalone',
+  background_color: '#4B0082',
+  theme_color: '#4B0082',
+  orientation: 'portrait',
+  icons: [
+    {src: icon192, sizes: '192x192', type: 'image/png'},
+    {src: icon512, sizes: '512x512', type: 'image/png'},
+  ]
+};
+const manifestBlob = new Blob([JSON.stringify(manifest)], {type:'application/manifest+json'});
+document.getElementById('manifest-link').href = URL.createObjectURL(manifestBlob);
+
+// ── SERVICE WORKER (inline) ──────────────────────────────────────────────────
+if('serviceWorker' in navigator){
+  const swCode=`
+    const CACHE='corona-bingo-v1';
+    self.addEventListener('install',e=>{
+      e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['/'])));
+      self.skipWaiting();
+    });
+    self.addEventListener('activate',e=>{self.clients.claim();});
+    self.addEventListener('fetch',e=>{
+      e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>caches.match('/'))));
+    });`;
+  const swBlob=new Blob([swCode],{type:'application/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
+}
+
+// ── PWA INSTALL PROMPT ───────────────────────────────────────────────────────
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  document.getElementById('install-banner').classList.add('show');
+});
+document.getElementById('btn-install').addEventListener('click',async()=>{
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt();
+  const{outcome}=await deferredPrompt.userChoice;
+  if(outcome==='accepted') document.getElementById('install-banner').classList.remove('show');
+  deferredPrompt=null;
+});
+document.getElementById('btn-close-banner').addEventListener('click',()=>{
+  document.getElementById('install-banner').classList.remove('show');
+});
+window.addEventListener('appinstalled',()=>{
+  document.getElementById('install-banner').classList.remove('show');
+});
+
+// ── APP LOGIC ────────────────────────────────────────────────────────────────
+const KEY='corona_bingo_v5';
+const COLS=['name','b','i'];
+const CLABEL={name:'NOMBRE',b:'B',i:'I'};
+const CBG={name:'#008B8B',b:'#4472C4',i:'#ED7D31'};
+const CFG={name:'#fff',b:'#fff',i:'#fff'};
+
+let db=load(),activeId=null,editTarget=null,selStatus=0;
+
+function load(){try{const r=JSON.parse(localStorage.getItem(KEY));if(r&&r.sessions)return r;}catch(e){}return{sessions:[]};}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(db));}catch(e){}}
+function fmtF(d){return d.toLocaleDateString('es-DO',{day:'2-digit',month:'2-digit',year:'numeric'});}
+function fmtH(d){return d.toLocaleTimeString('es-DO',{hour:'2-digit',minute:'2-digit'});}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+function stLbl(s){return s===1?'PAGADO':s===2?'PENDIENTE':s===3?'RESERVADO':s===4?'L':s===5?'T':s===6?'LINEA':s===7?'DIAMANTE':s===8?'BINGO':'';}
+function stShort(s){return stLbl(s);}
+const ST_COLORS=[null,'#00C853','#FF1744','#FFA000','#378ADD','#D85A30','#00C853','#993556','#FFD600'];
+const ST_FG=[null,'#fff','#fff','#fff','#fff','#fff','#fff','#fff','#5D4037'];
+function makeCard(num){const c={num};COLS.forEach(k=>{c[k]='';c[k+'_st']=0;c[k+'_prize']='';});return c;}
+
+function newSession(){
+  const id='s'+Date.now();const num=db.sessions.length+1;const now=new Date();
+  db.sessions.push({id,num,name:'Partida #'+num,fecha:fmtF(now),hora:fmtH(now),
+    cards:Array.from({length:16},(_,i)=>makeCard(i+1))});
+  save();activeId=id;render();
+}
+function getActive(){return db.sessions.find(s=>s.id===activeId)||null;}
+function countAll(sess,st){
+  let n=0;sess.cards.forEach(c=>COLS.forEach(k=>{if((c[k+'_st']||0)===st)n++;}));return n;
+}
+
+function renderBar(){
+  const bar=document.getElementById('sessions-bar');bar.innerHTML='';
+  db.sessions.slice().reverse().forEach(s=>{
+    const chip=document.createElement('div');
+    chip.className='session-chip'+(s.id===activeId?' active':'');
+    chip.textContent=s.name;
+    chip.addEventListener('click',()=>{activeId=s.id;render();});
+    bar.appendChild(chip);
+  });
+  const nb=document.createElement('button');nb.className='new-chip';nb.textContent='+ Nueva';
+  nb.addEventListener('click',newSession);bar.appendChild(nb);
+}
+
+function renderMain(){
+  const mv=document.getElementById('main-view');
+  const sess=getActive();
+  if(!sess){
+    mv.innerHTML='<div class="empty-state"><div style="font-size:52px;margin-bottom:1rem">&#128081;</div><div style="font-size:16px;margin-bottom:1rem;color:#666">No hay partidas todavia</div><button class="btn btn-purple" style="font-size:14px;padding:10px 20px" onclick="newSession()">+ Crear primera partida</button></div>';
+    return;
+  }
+  const pagado=countAll(sess,1),pend=countAll(sess,2),res=countAll(sess,3);
+  const figL=countAll(sess,4),figT=countAll(sess,5),figLin=countAll(sess,6),figDia=countAll(sess,7),figBingo=countAll(sess,8);
+  const free=sess.cards.length*COLS.length-pagado-pend-res-figL-figT-figLin-figDia-figBingo;
+
+  mv.innerHTML=`
+  <div class="sess-head">
+    <input class="sess-name-input" id="sname" value="${esc(sess.name)}" placeholder="Nombre de la partida..." maxlength="30"/>
+    <div class="sess-meta">${sess.fecha} &nbsp;&bull;&nbsp; ${sess.hora}</div>
+    <div class="sess-badges">
+      <div class="sbadge sbadge-g"><div class="sbadge-lbl">PRECIO</div><div class="sbadge-val">$15</div></div>
+      <div class="sbadge sbadge-r"><div class="sbadge-lbl">PREMIO</div><div class="sbadge-val">$180</div></div>
+    </div>
+    <div class="sess-btns">
+      <button class="btn btn-green btn-sm" id="btn-dl-one" style="flex:1">&#8659; Descargar esta lista</button>
+      <button class="btn btn-danger btn-sm" id="btn-del">Eliminar</button>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:5px">
+    <div class="tot" style="background:#C8F7C5;border:1.5px solid #00C853"><div class="tot-lbl">&#10003; Pagado</div><div class="tot-val" style="color:#1B5E20">${pagado}</div></div>
+    <div class="tot" style="background:#FFD6D6;border:1.5px solid #FF1744"><div class="tot-lbl">&#10007; Pendiente</div><div class="tot-val" style="color:#7a0000">${pend}</div></div>
+    <div class="tot" style="background:#FFF0CC;border:1.5px solid #FFA000"><div class="tot-lbl">&#128221; Reservado</div><div class="tot-val" style="color:#5D4037">${res}</div></div>
+    <div class="tot tot-free"><div class="tot-lbl">Libres</div><div class="tot-val t-p">${free}</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:7px">
+    <div class="tot" style="background:#DCEEFF;border:1.5px solid #378ADD"><div class="tot-lbl">&#9698; L</div><div class="tot-val" style="color:#0C447C">${figL}</div></div>
+    <div class="tot" style="background:#FFE8D6;border:1.5px solid #D85A30"><div class="tot-lbl">&#9868; T</div><div class="tot-val" style="color:#712B13">${figT}</div></div>
+    <div class="tot" style="background:#E8F5E9;border:1.5px solid #00C853"><div class="tot-lbl">&#9135; Linea</div><div class="tot-val" style="color:#1B5E20">${figLin}</div></div>
+    <div class="tot" style="background:#F3E5F5;border:1.5px solid #993556"><div class="tot-lbl">&#9670; Diam.</div><div class="tot-val" style="color:#4A1B28">${figDia}</div></div>
+    <div class="tot" style="background:#FFFDE7;border:1.5px solid #FFD600"><div class="tot-lbl">&#128081; Bingo</div><div class="tot-val" style="color:#5D4037">${figBingo}</div></div>
+  </div>
+  <div class="hint">Toca cualquier celda para editar</div>
+  <div class="table-wrap">
+    <table>
+      <colgroup><col class="col-num"/><col class="col-data"/><col class="col-data"/><col class="col-data"/></colgroup>
+      <thead><tr>
+        <th class="th-num">#</th>
+        <th class="th-name">NOMBRE</th>
+        <th class="th-b">B</th>
+        <th class="th-i">I</th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>`;
+
+  document.getElementById('sname').addEventListener('input',e=>{sess.name=e.target.value||'Sin nombre';save();renderBar();});
+  document.getElementById('btn-del').addEventListener('click',()=>{
+    if(!confirm('Eliminar "'+sess.name+'"?'))return;
+    db.sessions=db.sessions.filter(s=>s.id!==activeId);
+    activeId=db.sessions.length?db.sessions[db.sessions.length-1].id:null;
+    save();render();
+  });
+  document.getElementById('btn-dl-one').addEventListener('click',()=>downloadOne(sess));
+
+  const tbody=document.getElementById('tbody');
+  sess.cards.forEach((card,i)=>{
+    const tr=document.createElement('tr');
+    tr.className=i%2===0?'row-odd':'row-even';
+    const tdNum=document.createElement('td');
+    tdNum.className='td-num';
+    tdNum.innerHTML=`<div class="num-inner">${card.num}</div>`;
+    tr.appendChild(tdNum);
+    COLS.forEach(col=>{
+      const st=card[col+'_st']||0;
+      const val=card[col]||'';
+      const prize=card[col+'_prize']||'';
+      const td=document.createElement('td');
+      td.className='td-data';
+      td.innerHTML=`<div class="cell-inner st-${st}">
+        <div class="cell-name">${val||'libre'}</div>
+        ${stLbl(st)?`<div class="cell-status">${stLbl(st)}${prize?` $${prize}`:''}</div>`:''}
+      </div>`;
+      td.addEventListener('click',()=>openModal(i,col));
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+}
+
+function render(){renderBar();renderMain();}
+
+function openModal(cardIdx,col){
+  const sess=getActive();if(!sess)return;
+  editTarget={cardIdx,col};
+  const card=sess.cards[cardIdx];
+  selStatus=card[col+'_st']||0;
+  const badge=document.getElementById('modal-badge');
+  badge.style.background=CBG[col];badge.style.color=CFG[col];badge.textContent=CLABEL[col];
+  document.getElementById('modal-title').textContent='Carton #'+card.num+' — '+CLABEL[col];
+  document.getElementById('modal-sub').textContent=sess.name+' · '+sess.fecha;
+  document.getElementById('modal-name').value=card[col]||'';
+  document.getElementById('modal-prize').value=card[col+'_prize']||'';
+  document.querySelectorAll('.sbtn').forEach(b=>b.classList.toggle('sel',parseInt(b.dataset.s)===selStatus));
+  document.getElementById('overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('modal-name').focus(),150);
+}
+
+document.querySelectorAll('.sbtn').forEach(b=>b.addEventListener('click',()=>{
+  selStatus=parseInt(b.dataset.s);
+  document.querySelectorAll('.sbtn').forEach(x=>x.classList.remove('sel'));
+  b.classList.add('sel');
+}));
+document.getElementById('modal-save').addEventListener('click',()=>{
+  const sess=getActive();if(!sess||!editTarget)return;
+  const{cardIdx,col}=editTarget;
+  sess.cards[cardIdx][col]=document.getElementById('modal-name').value.trim().toUpperCase();
+  sess.cards[cardIdx][col+'_st']=selStatus;
+  sess.cards[cardIdx][col+'_prize']=document.getElementById('modal-prize').value.trim();
+  save();document.getElementById('overlay').classList.remove('open');editTarget=null;renderMain();
+});
+document.getElementById('modal-cancel').addEventListener('click',()=>{
+  document.getElementById('overlay').classList.remove('open');editTarget=null;
+});
+document.getElementById('modal-name').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('modal-save').click();});
+document.getElementById('btn-new-top').addEventListener('click',newSession);
+
+// ── DOWNLOAD ────────────────────────────────────────────────────────────────
+const ST_BG={0:'#F8F4FF',1:'#C8F7C5',2:'#FFD6D6',3:'#FFF0CC',4:'#DCEEFF',5:'#FFE8D6',6:'#E8F5E9',7:'#F3E5F5',8:'#FFFDE7'};
+const ST_TXT={0:'',1:'PAGADO',2:'PENDIENTE',3:'RESERVADO',4:'L',5:'T',6:'LINEA',7:'DIAMANTE',8:'BINGO'};
+const ST_CLR={0:'#ccc',1:'#1B5E20',2:'#7a0000',3:'#5D4037',4:'#0C447C',5:'#712B13',6:'#1B5E20',7:'#4A1B28',8:'#5D4037'};
+const ST_BADGE={1:'background:#00C853;color:#fff',2:'background:#FF1744;color:#fff',3:'background:#FFA000;color:#fff',4:'background:#378ADD;color:#fff',5:'background:#D85A30;color:#fff',6:'background:#00C853;color:#fff',7:'background:#993556;color:#fff',8:'background:#FFD600;color:#5D4037'};
+
+function buildHTML(sess){
+  const rows=sess.cards.map((card,i)=>{
+    const numBg=i%2===0?'#EEEDFE':'#FAEEDA';
+    const numClr=i%2===0?'#3C3489':'#B8860B';
+    const cells=COLS.map(col=>{
+      const st=card[col+'_st']||0;const val=card[col]||'';const lbl=ST_TXT[st];
+      const prize=card[col+'_prize']||'';
+      const prizeTag=prize?` $${prize}`:'';
+      return `<td style="border:1px solid #ddd;padding:8px 5px;background:${ST_BG[st]};text-align:center;vertical-align:middle">
+        <div style="font-size:14px;font-weight:700;color:${val?ST_CLR[st]:'#ccc'};word-break:break-word;line-height:1.2">${val||'libre'}</div>
+        ${lbl?`<div style="font-size:11px;font-weight:700;margin-top:4px;border-radius:4px;padding:2px 5px;display:inline-block;${ST_BADGE[st]}">${lbl}${prizeTag}</div>`:''}
+      </td>`;
+    }).join('');
+    return `<tr><td style="text-align:center;font-size:15px;font-weight:700;padding:9px 4px;border:1px solid #ddd;background:${numBg};color:${numClr};vertical-align:middle">${card.num}</td>${cells}</tr>`;
+  }).join('');
+  const pagado=countAll(sess,1),pend=countAll(sess,2),res=countAll(sess,3);
+  const figL=countAll(sess,4),figT=countAll(sess,5),figLin=countAll(sess,6),figDia=countAll(sess,7),figBingo=countAll(sess,8);
+  const colThs=COLS.map(c=>`<th style="background:${CBG[c]};color:${CFG[c]};padding:10px 5px;border:1px solid rgba(255,255,255,0.2);font-size:14px;font-weight:700">${CLABEL[c]}</th>`).join('');
+  return `<div style="margin-bottom:32px">
+    <div style="background:#4B0082;border-radius:12px;padding:16px;margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span style="font-size:28px">&#128081;</span>
+        <div><div style="color:#FFD700;font-size:20px;font-weight:700">${sess.name}</div>
+        <div style="color:#CEB9F5;font-size:12px;margin-top:2px">&#128197; ${sess.fecha} &nbsp;&#128336; ${sess.hora}</div></div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <div style="background:#006400;color:#d4edda;border-radius:7px;padding:6px 10px;text-align:center;flex:1"><div style="font-size:9px;font-weight:700">PRECIO</div><div style="font-size:18px;font-weight:700">$15</div></div>
+        <div style="background:#A32D2D;color:#FCEBEB;border-radius:7px;padding:6px 10px;text-align:center;flex:1"><div style="font-size:9px;font-weight:700">PREMIO</div><div style="font-size:18px;font-weight:700">$180</div></div>
+      </div>
+    </div>
+    <table style="width:100%;border-collapse:collapse;table-layout:fixed">
+      <thead><tr><th style="background:#4B0082;color:#FFD700;padding:10px 4px;border:1px solid rgba(255,255,255,0.2);font-size:13px;font-weight:700;width:44px">#</th>${colThs}</tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;font-size:12px">
+      <span style="background:#C8F7C5;padding:5px 10px;border-radius:7px;color:#1B5E20;font-weight:700">&#10003; Pagados: ${pagado}</span>
+      <span style="background:#FFD6D6;padding:5px 10px;border-radius:7px;color:#7a0000;font-weight:700">&#10007; Pendientes: ${pend}</span>
+      <span style="background:#FFF0CC;padding:5px 10px;border-radius:7px;color:#5D4037;font-weight:700">&#128221; Reservados: ${res}</span>
+      <span style="background:#DCEEFF;padding:5px 10px;border-radius:7px;color:#0C447C;font-weight:700">&#9698; L: ${figL}</span>
+      <span style="background:#FFE8D6;padding:5px 10px;border-radius:7px;color:#712B13;font-weight:700">&#9868; T: ${figT}</span>
+      <span style="background:#E8F5E9;padding:5px 10px;border-radius:7px;color:#1B5E20;font-weight:700">&#9135; Linea: ${figLin}</span>
+      <span style="background:#F3E5F5;padding:5px 10px;border-radius:7px;color:#4A1B28;font-weight:700">&#9670; Diam.: ${figDia}</span>
+      <span style="background:#FFFDE7;padding:5px 10px;border-radius:7px;color:#5D4037;font-weight:700">&#128081; Bingo: ${figBingo}</span>
+    </div>
+  </div>`;
+}
+
+function dlFile(html,name){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));
+  a.download=name;a.click();
+}
+function wrap(body,title){
+  return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>${title}</title></head><body style="font-family:system-ui;padding:16px;background:#f0eaf8;max-width:600px;margin:0 auto">${body}</body></html>`;
+}
+
+function downloadOne(sess){
+  const now=new Date();
+  const fechaDl=fmtF(now),horaDl=fmtH(now);
+  const foot=`<div style="background:#4B0082;border-radius:10px;padding:12px;text-align:center;margin-top:12px">
+    <div style="color:#CEB9F5;font-size:12px;font-weight:700">&#128197; Descargado el ${fechaDl} a las ${horaDl}</div>
+    <div style="color:#FFD700;font-size:11px;margin-top:2px">&#128081; Corona Bingo App</div>
+  </div>`;
+  dlFile(wrap(buildHTML(sess)+foot,sess.name+' — '+sess.fecha),
+    'CoronaBingo_'+sess.name.replace(/[^a-zA-Z0-9#]/g,'_')+'_'+sess.fecha.replace(/\//g,'-')+'_'+horaDl.replace(':','-')+'.html');
+}
+
+document.getElementById('btn-dl-all').addEventListener('click',()=>{
+  if(!db.sessions.length){alert('No hay partidas todavia.');return;}
+  const now=new Date();
+  const fechaDl=fmtF(now),horaDl=fmtH(now);
+  const all=db.sessions.map(buildHTML).join('<hr style="border:none;border-top:2px dashed #C9AAFF;margin:24px 0">');
+  const head=`<div style="background:#4B0082;border-radius:14px;padding:20px;text-align:center;margin-bottom:24px">
+    <div style="font-size:40px;margin-bottom:8px">&#128081;</div>
+    <div style="color:#FFD700;font-size:24px;font-weight:700">CORONA BINGO</div>
+    <div style="color:#CEB9F5;font-size:13px;margin-top:6px">Registro completo de partidas</div>
+    <div style="color:#FFD700;font-size:14px;margin-top:8px;font-weight:700">${db.sessions.length} partidas registradas</div>
+    <div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:8px 16px;margin-top:10px;display:inline-block">
+      <div style="color:#fff;font-size:13px;font-weight:700">&#128197; ${fechaDl} &nbsp;&bull;&nbsp; &#128336; ${horaDl}</div>
+    </div>
+  </div>`;
+  const foot=`<div style="background:#4B0082;border-radius:10px;padding:12px;text-align:center;margin-top:16px">
+    <div style="color:#CEB9F5;font-size:12px">Descargado el ${fechaDl} a las ${horaDl}</div>
+    <div style="color:#FFD700;font-size:11px;margin-top:2px">&#128081; Corona Bingo App</div>
+  </div>`;
+  dlFile(wrap(head+all+foot,'Registro Corona Bingo'),
+    'CoronaBingo_RegistroCompleto_'+fechaDl.replace(/\//g,'-')+'_'+horaDl.replace(':','-')+'.html');
+});
+
+activeId=db.sessions.length?db.sessions[db.sessions.length-1].id:null;
+if(!db.sessions.length)newSession();else render();
+</script>
+</body>
+</html>
